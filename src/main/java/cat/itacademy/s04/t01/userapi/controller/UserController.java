@@ -26,4 +26,13 @@ public class UserController {
         users.add(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+        return users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst()
+                .map(u -> new ResponseEntity<>(u, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 }
