@@ -135,4 +135,3 @@ class UserControllerTest {
                 .andExpect(jsonPath("$").isEmpty());
     }
 }
-
