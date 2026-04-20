@@ -16,9 +16,16 @@ public class UserController {
     private final List<User> users = new ArrayList<>();
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return users;
+    public List<User> getAllUsers(@RequestParam(required = false) String name) {
+        if (name == null || name.isEmpty()) {
+            return users;
+        }
+        return users.stream()
+                .filter(u -> u.getName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
+
     }
+
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
