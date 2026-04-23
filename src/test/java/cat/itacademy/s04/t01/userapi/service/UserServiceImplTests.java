@@ -1,5 +1,6 @@
 package cat.itacademy.s04.t01.userapi.service;
 
+import cat.itacademy.s04.t01.userapi.exception.EmailAlreadyExistsException;
 import cat.itacademy.s04.t01.userapi.exception.UserNotFoundException;
 import cat.itacademy.s04.t01.userapi.model.User;
 import cat.itacademy.s04.t01.userapi.repository.UserRepository;
@@ -97,5 +98,19 @@ class UserServiceImplTests {
                 () -> userService.getUserById(id));
 
         verify(userRepository).findById(id);
+    }
+
+    @Test
+    void createUser_throwsExceptionWhenEmailAlreadyExists() {
+        User user = new User();
+        user.setName("Anne");
+        user.setEmail("anne@example.com");
+
+        when(userRepository.existsByEmail("anne@example.com")).thenReturn(true);
+
+        assertThrows(EmailAlreadyExistsException.class,
+                () -> userService.createUser(user));
+
+        verify(userRepository, never()).save(any());
     }
 }
