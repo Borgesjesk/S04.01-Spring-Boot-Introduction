@@ -1,11 +1,11 @@
 package cat.itacademy.s04.t01.userapi.controller;
 
 import cat.itacademy.s04.t01.userapi.model.User;
+import cat.itacademy.s04.t01.userapi.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,32 +13,24 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
+    private final UserService service;
+
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public List<User> getAllUsers(@RequestParam(required = false) String name) {
-        if (name == null || name.isEmpty()) {
-            return users;
-        }
-        return users.stream()
-                .filter(u -> u.getName().toLowerCase().contains(name.toLowerCase()))
-                .toList();
+        return service.getAllUsers(name);
     }
-
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        user.setId(UUID.randomUUID());
-        users.add(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(service.createUser(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
-        return users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .map(u -> new ResponseEntity<>(u, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return new ResponseEntity<>(service.getUserById(id), HttpStatus.OK);
     }
 }
